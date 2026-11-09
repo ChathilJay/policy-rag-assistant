@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets: copy .env.example to .env and never commit .env
+.env
+
+# Downloaded documents and generated data (recreate with scripts/download.py and ingest)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/

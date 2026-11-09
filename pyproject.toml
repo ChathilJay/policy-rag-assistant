@@ -9,7 +9,6 @@ dependencies = [
     "beautifulsoup4>=4.15.0",
     "httpx>=0.28.1",
     "pypdf>=7.0.0",
-    "tiktoken>=0.14.0",
 ]
 
 [dependency-groups]

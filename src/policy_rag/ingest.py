@@ -31,8 +31,10 @@ def load_html(path: Path) -> str:
     # Site navigation, scripts and footers would pollute every chunk with the same text.
     for tag in soup(["script", "style", "nav", "header", "footer", "form"]):
         tag.decompose()
-    main = soup.find("main") or soup.body or soup
-    return main.get_text(separator="\n")
+    # Prefer the element the page's "Skip to main content" link points to. On fairwork.gov.au
+    # that is id="main-content"; the site menu and translation picker sit outside it.
+    content = soup.find(id="main-content") or soup.find("main") or soup.body or soup
+    return content.get_text(separator="\n")
 
 
 def load_document(path: Path) -> str:

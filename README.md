@@ -7,7 +7,7 @@ using Fair Work Ombudsman fact sheets, and cites the document each answer comes 
 Built for students, graduates and casual workers who want a quick, sourced answer before
 reading the full guidance.
 
-> Status: in progress. Week 1 covers project setup, the document list and ingestion.
+> Status: in progress. See [docs/devlog.md](docs/devlog.md) for what was built each day.
 
 ## Setup
 

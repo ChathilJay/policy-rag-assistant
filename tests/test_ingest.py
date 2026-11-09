@@ -53,6 +53,22 @@ def test_html_loader_drops_navigation_and_scripts(tmp_path):
         assert noise not in text
 
 
+def test_html_loader_prefers_main_content_id_over_site_chrome(tmp_path):
+    # Shape of a fairwork.gov.au page: the menu sits outside #main-content and there is no <nav>.
+    page = tmp_path / "page.html"
+    page.write_text(
+        '<html><body><a href="#main-content">Skip to main content</a>'
+        '<div class="dialog-off-canvas-main-canvas">'
+        '<div class="block-websitetranslation">Translate this website Bengali Bosnian</div>'
+        '<div id="main-content"><h1>Dismissal</h1><p>An employer must give notice.</p></div>'
+        "</div></body></html>"
+    )
+    text = load_html(page)
+    assert "An employer must give notice." in text
+    assert "Translate this website" not in text
+    assert "Skip to main content" not in text
+
+
 def test_ingest_writes_chunks_with_source_metadata(tmp_path):
     raw = tmp_path / "raw"
     raw.mkdir()

@@ -15,3 +15,14 @@ reading the full guidance.
 uv sync
 uv run pytest
 ```
+
+## Documents
+
+The assistant answers from 13 public Fair Work Ombudsman documents listed in
+[`data/sources.csv`](data/sources.csv): fact sheets on the National Employment Standards,
+casual work, notice and redundancy, dismissal, modern awards and international students.
+They are downloaded rather than committed:
+
+```bash
+uv run python scripts/download.py
+```

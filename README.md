@@ -26,3 +26,15 @@ They are downloaded rather than committed:
 ```bash
 uv run python scripts/download.py
 ```
+
+## Ingestion
+
+```bash
+uv run python -m policy_rag.ingest
+```
+
+Each document is converted to plain text (PDFs with `pypdf`, web pages with BeautifulSoup,
+with navigation and scripts stripped) and split into chunks of about 450 words, roughly 600
+tokens, with a 75-word overlap so a sentence cut at a boundary still appears whole in one chunk.
+Chunks are written to `data/processed/chunks.jsonl` with their source title and URL, so later
+answers can cite where they came from.

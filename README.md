@@ -38,3 +38,14 @@ with navigation and scripts stripped) and split into chunks of about 450 words, 
 tokens, with a 75-word overlap so a sentence cut at a boundary still appears whole in one chunk.
 Chunks are written to `data/processed/chunks.jsonl` with their source title and URL, so later
 answers can cite where they came from.
+
+## Search
+
+```bash
+uv run python -m policy_rag.index
+uv run python -m policy_rag.search "How much notice does my employer have to give me?"
+```
+
+Chunks are embedded locally with `BAAI/bge-small-en-v1.5` (via fastembed) and stored in an
+embedded Qdrant index in `data/index/`. Search embeds the question with the same model and
+returns the five chunks with the highest cosine similarity.

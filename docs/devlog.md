@@ -2,6 +2,43 @@
 
 One entry per working day: what was built, why, and what to revise. Newest first.
 
+## Day 2 — 9 November 2026: embeddings and vector search
+
+**Built**
+- `src/policy_rag/embeddings.py`: a small `Embedder` interface and `FastEmbedder`, which runs
+  the `BAAI/bge-small-en-v1.5` model locally through fastembed (no GPU or PyTorch needed).
+- `src/policy_rag/store.py`: `VectorStore`, a wrapper around a Qdrant collection.
+- `src/policy_rag/index.py`: embeds every chunk and saves the index to `data/index/`.
+- `src/policy_rag/search.py`: embeds a question and returns the 5 closest chunks.
+- Tests with a fake embedder, so they run in a second without downloading a model.
+
+**Concepts to revise**
+- **Embedding.** A model maps text to a list of numbers (here 384) so that texts with similar
+  meaning land close together. "Fired" and "dismissed" end up near each other even though
+  they share no letters, which keyword search cannot do.
+- **Cosine similarity.** Measures the angle between two vectors: 1 means same direction (same
+  meaning), 0 means unrelated. Length is ignored, so long and short chunks compare fairly.
+- **Query vs passage embeddings.** BGE models were trained with different prefixes for
+  questions and documents; `query_embed` and `passage_embed` add them for you.
+- **Vector database.** Stores vectors plus metadata (title, URL) and finds nearest neighbours
+  fast. Qdrant's embedded mode is just a folder on disk; the same code works against a Qdrant
+  server later by changing one line.
+- **Dependency injection.** Indexing and search take an `Embedder`, not a specific model, so
+  tests pass a fake and you could swap in an API embedding model without other changes.
+
+**Interview questions you should be able to answer**
+1. Why use embeddings instead of keyword search, and when does keyword search still win?
+2. Why must questions and documents be embedded by the same model?
+3. Why does `build_index` recreate the collection instead of adding to it?
+
+**Run it yourself**
+```bash
+uv sync
+uv run python -m policy_rag.index
+uv run python -m policy_rag.search "Can my employer make me do an unpaid trial shift?"
+```
+The first run downloads the model (about 130 MB).
+
 ## Day 1 — 9 November 2026: setup, documents and ingestion
 
 **Built**

@@ -2,6 +2,41 @@
 
 One entry per working day: what was built, why, and what to revise. Newest first.
 
+## Day 3 — 10 November 2026: hybrid search
+
+**Built**
+- `src/policy_rag/keyword.py`: BM25 keyword search over the same chunks.
+- `src/policy_rag/hybrid.py`: runs meaning-based and keyword search, then merges the two
+  ranked lists with Reciprocal Rank Fusion (RRF).
+- `search.py` now takes `--mode hybrid|dense|keyword`, so you can compare all three.
+
+**Concepts to revise**
+- **Why hybrid?** Embeddings handle paraphrase ("fired" finds "dismissal") but can blur exact
+  terms like a document name, a section number or a dollar amount. BM25 is the opposite.
+  Combining them covers both failure modes, and most production RAG systems do this.
+- **BM25.** Scores a chunk by the question words it contains, giving more weight to rare words
+  (high IDF) and less to words repeated many times in one chunk (term saturation).
+- **Stopwords.** Words like "the" and "how" appear everywhere and carry no signal, so they are
+  dropped before scoring.
+- **Reciprocal Rank Fusion.** Each list gives a chunk 1 / (60 + rank). Summing across lists
+  rewards chunks that rank well in both. It uses ranks, not scores, because cosine scores
+  (0 to 1) and BM25 scores (unbounded) are not comparable.
+- **Candidates vs k.** Each method fetches 20 candidates, and fusion picks the best 5, so a chunk
+  ranked 12th by one method can still win if the other ranks it highly.
+
+**Interview questions you should be able to answer**
+1. Give a question where keyword search beats embeddings, and one where it loses.
+2. Why not just add the cosine score and the BM25 score together?
+3. What does the 60 in RRF control, and what happens if it is very small?
+
+**Run it yourself**
+```bash
+uv sync
+uv run python -m policy_rag.search --mode dense "Fair Work Information Statement"
+uv run python -m policy_rag.search --mode keyword "Fair Work Information Statement"
+uv run python -m policy_rag.search "Fair Work Information Statement"
+```
+
 ## Day 2 — 9 November 2026: embeddings and vector search
 
 **Built**

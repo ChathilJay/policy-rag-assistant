@@ -46,6 +46,7 @@ uv run python -m policy_rag.index
 uv run python -m policy_rag.search "How much notice does my employer have to give me?"
 ```
 
-Chunks are embedded locally with `BAAI/bge-small-en-v1.5` (via fastembed) and stored in an
-embedded Qdrant index in `data/index/`. Search embeds the question with the same model and
-returns the five chunks with the highest cosine similarity.
+Search is hybrid. Chunks are embedded locally with `BAAI/bge-small-en-v1.5` (via fastembed)
+and stored in an embedded Qdrant index in `data/index/`, and a BM25 keyword index is built
+over the same chunks. Each returns 20 candidates, which are merged with Reciprocal Rank Fusion
+into the final top five. Use `--mode dense` or `--mode keyword` to see either one alone.

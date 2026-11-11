@@ -49,4 +49,6 @@ uv run python -m policy_rag.search "How much notice does my employer have to giv
 Search is hybrid. Chunks are embedded locally with `BAAI/bge-small-en-v1.5` (via fastembed)
 and stored in an embedded Qdrant index in `data/index/`, and a BM25 keyword index is built
 over the same chunks. Each returns 20 candidates, which are merged with Reciprocal Rank Fusion
-into the final top five. Use `--mode dense` or `--mode keyword` to see either one alone.
+into a shortlist of 20. A cross-encoder (`ms-marco-MiniLM-L-6-v2`) then re-reads each
+candidate alongside the question and keeps the best five. Use `--mode dense` or
+`--mode keyword` to see either method alone, or `--no-rerank` to skip the last step.

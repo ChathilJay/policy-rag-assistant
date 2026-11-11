@@ -2,6 +2,39 @@
 
 One entry per working day: what was built, why, and what to revise. Newest first.
 
+## Day 4 — 11 November 2026: reranking
+
+**Built**
+- `src/policy_rag/rerank.py`: a `Reranker` interface and `CrossEncoderReranker`, which runs the
+  `ms-marco-MiniLM-L-6-v2` cross-encoder locally through fastembed.
+- Search now works in two stages: hybrid search finds 20 candidates, then the reranker
+  re-scores them and keeps the best 5. `--no-rerank` skips the second stage for comparison.
+
+**Concepts to revise**
+- **Bi-encoder vs cross-encoder.** The embedding model (bi-encoder) encodes question and chunk
+  separately and compares vectors, which is fast enough to search everything. A cross-encoder
+  reads question and chunk together, so it notices whether the chunk actually answers the
+  question, but it costs one model run per chunk.
+- **Retrieve then rerank.** Use the fast method for recall (don't miss the right chunk among
+  20), then the accurate method for precision (put it first). This two-stage pattern is
+  standard in search and RAG.
+- **Why order matters for RAG.** Only the top few chunks go into the LLM prompt. A correct chunk
+  at rank 9 is as useless as a missing one.
+- **Latency budget.** Reranking 20 short chunks on CPU takes well under a second; reranking all
+  82 on every query would waste time for little gain.
+
+**Interview questions you should be able to answer**
+1. Why not use the cross-encoder for the whole search?
+2. How would you decide how many candidates (20 here) to pass to the reranker?
+3. How would you measure whether reranking actually helped?
+
+**Run it yourself**
+```bash
+uv run python -m policy_rag.search --no-rerank "Can I be asked to work unpaid overtime?"
+uv run python -m policy_rag.search "Can I be asked to work unpaid overtime?"
+```
+The first reranked search downloads the model (about 80 MB).
+
 ## Day 3 — 10 November 2026: hybrid search
 
 **Built**

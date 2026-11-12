@@ -52,3 +52,14 @@ over the same chunks. Each returns 20 candidates, which are merged with Reciproc
 into a shortlist of 20. A cross-encoder (`ms-marco-MiniLM-L-6-v2`) then re-reads each
 candidate alongside the question and keeps the best five. Use `--mode dense` or
 `--mode keyword` to see either method alone, or `--no-rerank` to skip the last step.
+
+## Ask a question
+
+```bash
+cp .env.example .env   # then add your ANTHROPIC_API_KEY
+uv run python -m policy_rag.ask "Can my employer make me do an unpaid trial shift?"
+```
+
+The five best chunks are sent to Claude as separate documents with citations enabled, so every
+statement in the answer links back to the exact passage it came from. If the documents don't
+cover the question, the assistant says so and points to the Fair Work Infoline.

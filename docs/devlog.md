@@ -2,6 +2,47 @@
 
 One entry per working day: what was built, why, and what to revise. Newest first.
 
+## Day 5 — 12 November 2026: answers with citations
+
+**Built**
+- `src/policy_rag/answer.py`: sends the top 5 reranked chunks and the question to Claude
+  (`claude-opus-5-5`) and turns the reply into an answer with numbered sources.
+- `src/policy_rag/ask.py`: the full pipeline in one command: hybrid search, reranking, answer.
+- Tests with a fake API client, so they run without a key or network.
+
+**Concepts to revise**
+- **This is the "G" in RAG.** Retrieval finds the evidence; generation writes the answer from
+  it. The system prompt tells Claude to answer only from the documents and to say when they
+  don't cover the question, which is how you limit made-up answers (hallucination).
+- **Native citations.** Each chunk is sent as a `document` block with
+  `citations: {"enabled": true}`. The API splits the reply into text blocks, each listing the
+  exact quote it relies on (`cited_text`) and which document (`document_index`). The quotes
+  are extracted by the API, so they always exist in your documents, unlike asking the model
+  to write "[1]" itself.
+- **Prompt layout.** Long documents go first and the question last; models answer more
+  accurately that way.
+- **Effort.** `output_config.effort` trades thinking depth against cost and latency. Short Q&A
+  over provided text doesn't need deep reasoning, so it is set to `medium`.
+- **Refusals and fallbacks.** If the model declines on safety grounds the reply has
+  `stop_reason: "refusal"`; the code handles that, and the `fallbacks` setting lets the API
+  retry on another model automatically.
+- **Secrets.** The API key lives in `.env`, which is gitignored and loaded with `python-dotenv`.
+  It never goes in code or commits.
+
+**Interview questions you should be able to answer**
+1. How does your assistant avoid making things up, and how would you measure whether it does?
+2. Why use the API's citations instead of asking the model to add [1] markers?
+3. What happens when retrieval finds nothing relevant?
+
+**Run it yourself**
+1. Get an API key at platform.claude.com, copy `.env.example` to `.env`, and paste the key in.
+2. Then:
+```bash
+uv sync
+uv run python -m policy_rag.ask "Can my employer make me do an unpaid trial shift?"
+```
+Each question costs a fraction of a cent at this size.
+
 ## Day 4 — 11 November 2026: reranking
 
 **Built**
